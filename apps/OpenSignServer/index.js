@@ -11,6 +11,7 @@ import Mailgun from 'mailgun.js';
 import { ApiPayloadConverter } from 'parse-server-api-mail-adapter';
 import S3Adapter from '@parse/s3-files-adapter';
 import FSFilesAdapter from '@parse/fs-files-adapter';
+import { GridFSBucketAdapter } from 'parse-server/lib/Adapters/Files/GridFSBucketAdapter.js';
 import { app as customRoute } from './cloud/customRoute/customApp.js';
 import { exec } from 'child_process';
 import { createTransport } from 'nodemailer';
@@ -20,7 +21,15 @@ import runDbMigrations from './migrationdb/index.js';
 import { validateSignedLocalUrl } from './cloud/parsefunction/getSignedUrl.js';
 let fsAdapter;
 
-if (useLocal !== 'true') {
+const storageType = (process.env.STORAGE_TYPE || '').toLowerCase();
+
+if (storageType === 'gridfs') {
+  // Files stored as documents in the same MongoDB cluster via GridFS.
+  // Survives Render free-tier container restarts (no reliance on the ephemeral
+  // local disk) and reuses Parse Server's /files URL signing — same code paths
+  // as the FS adapter, so URL handling downstream stays correct.
+  fsAdapter = new GridFSBucketAdapter(process.env.MONGODB_URI);
+} else if (useLocal !== 'true') {
   try {
     // const spacesEndpoint = new AWS.Endpoint(process.env.DO_ENDPOINT);
     const spacesEndpoint = process.env.DO_ENDPOINT?.includes('http')

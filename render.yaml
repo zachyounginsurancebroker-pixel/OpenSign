@@ -18,6 +18,12 @@ services:
         value: /app
       - key: USE_LOCAL
         value: "true"
+      # Persist uploaded PDFs in MongoDB GridFS (same Atlas cluster) so they
+      # survive Render free-tier container restarts. Set to "fs" or unset to
+      # fall back to the ephemeral local disk; set to anything else with the
+      # DO_* vars filled to use S3-compatible object storage instead.
+      - key: STORAGE_TYPE
+        value: "gridfs"
       - key: PASS_PHRASE
         value: opensign
       - key: NODE_VERSION
