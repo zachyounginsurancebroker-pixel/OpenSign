@@ -30,6 +30,7 @@
     "axios": "^1.15.2",
     "coherentpdf": "^2.5.5",
     "cors": "^2.8.6",
+    "date-fns": "^4.2.1",
     "date-fns-tz": "^3.2.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

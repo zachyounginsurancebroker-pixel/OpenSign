@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: opensign-backend
+    runtime: node
+    plan: free
+    region: oregon
+    branch: staging
+    rootDir: apps/OpenSignServer
+    buildCommand: npm install --legacy-peer-deps
+    startCommand: npm start
+    healthCheckPath: /app/health
+    envVars:
+      - key: APP_ID
+        value: opensign
+      - key: appName
+        value: open_sign_server
+      - key: PARSE_MOUNT
+        value: /app
+      - key: USE_LOCAL
+        value: "true"
+      - key: PASS_PHRASE
+        value: opensign
+      - key: NODE_VERSION
+        value: "22"
+      - key: MASTER_KEY
+        generateValue: true
+      # ── Fill these in the Render dashboard after creating the service ──
+      - key: MONGODB_URI
+        sync: false
+      - key: SERVER_URL
+        sync: false
+      - key: PUBLIC_URL
+        sync: false
+      - key: PFX_BASE64
+        sync: false
