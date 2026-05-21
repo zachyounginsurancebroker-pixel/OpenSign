@@ -1,0 +1,33 @@
+name: Keep Render backend warm
+
+# Render free-tier web services spin down after 15 minutes of inactivity and
+# take ~50 seconds to wake. This ping every 13 minutes keeps the container
+# hot so login + first-page-load stay snappy.
+#
+# GitHub Actions scheduled workflows are billed against GitHub's free minutes
+# (2000/mo on free plans). A 5-second curl every 13 min uses ~12 min/month.
+
+on:
+  schedule:
+    - cron: "*/13 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Hit /app/health
+        run: |
+          set -eo pipefail
+          URL="https://opensign-backend-yvn5.onrender.com/app/health"
+          for i in 1 2 3; do
+            code=$(curl -sS -o /tmp/body -w "%{http_code}" --max-time 60 "$URL" || echo "000")
+            echo "Attempt $i: HTTP=$code body=$(cat /tmp/body | head -c 200)"
+            if [ "$code" = "200" ]; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "All attempts failed."
+          exit 1

@@ -16,17 +16,6 @@
 
 <body>
   <div id="root" style="touch-action:pan-x pan-y;"></div>
-  <script>
-    window.__BOOT_ERRORS__ = [];
-    window.addEventListener('error', function (e) {
-      window.__BOOT_ERRORS__.push({ type: 'error', msg: String(e.message), src: (e.filename || '') + ':' + (e.lineno || '') + ':' + (e.colno || ''), stack: e.error && e.error.stack ? String(e.error.stack).slice(0, 600) : null });
-      document.title = 'Boot error: ' + e.message;
-    });
-    window.addEventListener('unhandledrejection', function (e) {
-      window.__BOOT_ERRORS__.push({ type: 'unhandledrejection', reason: String(e.reason).slice(0, 600) });
-      document.title = 'Boot rejection: ' + String(e.reason).slice(0, 80);
-    });
-  </script>
   <script type="module" src="/src/index.jsx"></script>
 </body>
 
